@@ -12,3 +12,6 @@ https://www.infoworld.com/article/3650668/implement-authorization-for-swagger-in
 
 windows授權：
 https://blog.poychang.net/asp-net-core-windows-authentication/
+
+ASP.NET Web API 2 中的驗證篩選：
+https://docs.microsoft.com/zh-tw/aspnet/web-api/overview/security/authentication-filters
