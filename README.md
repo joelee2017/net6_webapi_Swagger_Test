@@ -5,6 +5,7 @@
 
 帳號授權：
 https://medium.com/@niteshsinghal85/securing-swagger-in-production-92d0a045a5
+https://medium.com/@niteshsinghal85/securing-swagger-ui-in-production-in-asp-net-core-part-2-dc2ae0f03c73
 
 jwt授權：
 https://www.infoworld.com/article/3650668/implement-authorization-for-swagger-in-aspnet-core-6.html
