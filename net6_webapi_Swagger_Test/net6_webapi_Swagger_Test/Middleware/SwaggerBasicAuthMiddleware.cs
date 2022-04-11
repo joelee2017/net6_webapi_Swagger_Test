@@ -21,7 +21,7 @@
                 var username = credentials[0];
                 var password = credentials[1];
 
-                string testPassword = "abcd" + DateTime.Now.ToString("MMdd");
+                string testPassword = "abcd" + DateTime.Now.ToString("MMddHH");
                 // validate credentials
                 if (username.Equals("abcd")
                   && password.Equals(testPassword))
