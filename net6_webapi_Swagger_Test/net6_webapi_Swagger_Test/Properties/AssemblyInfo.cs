@@ -17,3 +17,4 @@ global using global::Microsoft.AspNetCore.Server.IISIntegration;
 global using global::Microsoft.AspNetCore.Authentication.Negotiate;
 global using global::System.Net;
 global using global::System.Net.Http.Headers;
+global using global::System.DirectoryServices.AccountManagement;

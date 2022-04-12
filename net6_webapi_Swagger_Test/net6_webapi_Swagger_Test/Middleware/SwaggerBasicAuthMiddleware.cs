@@ -1,6 +1,4 @@
-﻿using System.DirectoryServices.AccountManagement;
-
-public class SwaggerBasicAuthMiddleware
+﻿public class SwaggerBasicAuthMiddleware
 {
     private readonly RequestDelegate next;
 
