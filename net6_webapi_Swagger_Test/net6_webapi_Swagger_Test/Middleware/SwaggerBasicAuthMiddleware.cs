@@ -1,13 +1,16 @@
-﻿public class SwaggerBasicAuthMiddleware
+﻿using System.DirectoryServices.AccountManagement;
+
+public class SwaggerBasicAuthMiddleware
 {
     private readonly RequestDelegate next;
+
     public SwaggerBasicAuthMiddleware(RequestDelegate next)
     {
         this.next = next;
     }
 
     public async Task InvokeAsync(HttpContext context)
-    {
+    {      
         if (context.Request.Path.StartsWithSegments("/swagger"))
         {
             //string authHeader = context.Request.Headers["Authorization"];
@@ -21,7 +24,11 @@
                 var username = credentials[0];
                 var password = credentials[1];
 
+                //串ad
+                //var r = ValidateCredentials(username, password);
+
                 string testPassword = "abcd" + DateTime.Now.ToString("MMddHH");
+
                 // validate credentials
                 if (username.Equals("abcd")
                   && password.Equals(testPassword))
@@ -37,6 +44,24 @@
         else
         {
             await next.Invoke(context).ConfigureAwait(false);
+        }
+    }
+
+    // 串AD 驗證
+    public static bool ValidateCredentials(string userName, string password)
+    {
+        try
+        {
+            using (var adContext = new PrincipalContext(ContextType.Domain, "YOUR_AD_DOMAIN"))
+            {
+                var r = adContext.ValidateCredentials(userName, password);
+
+                return r;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw;
         }
     }
 }
