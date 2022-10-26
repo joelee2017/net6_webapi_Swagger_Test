@@ -1,4 +1,7 @@
-﻿public class SwaggerBasicAuthMiddleware
+﻿
+using System.Security.Principal;
+
+public class SwaggerBasicAuthMiddleware
 {
     private readonly RequestDelegate next;
 
@@ -8,7 +11,7 @@
     }
 
     public async Task InvokeAsync(HttpContext context)
-    {      
+    {
         if (context.Request.Path.StartsWithSegments("/swagger"))
         {
             //string authHeader = context.Request.Headers["Authorization"];

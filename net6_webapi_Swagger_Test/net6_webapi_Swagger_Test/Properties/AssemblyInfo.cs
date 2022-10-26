@@ -15,6 +15,7 @@ global using global::System.IdentityModel.Tokens.Jwt;
 global using global::Microsoft.AspNetCore.Authorization;
 global using global::Microsoft.AspNetCore.Server.IISIntegration;
 global using global::Microsoft.AspNetCore.Authentication.Negotiate;
-global using global::System.Net;
+global using System.Net;
 global using global::System.Net.Http.Headers;
 global using global::System.DirectoryServices.AccountManagement;
+global using global::System.DirectoryServices;

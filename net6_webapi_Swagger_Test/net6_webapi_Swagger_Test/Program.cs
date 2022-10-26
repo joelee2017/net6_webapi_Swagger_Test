@@ -1,78 +1,75 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
+var services = builder.Services;
+services.AddSwaggerGen(options => {
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Test Api", Version = "v1" });
+    var xmlPath = Path.Combine(builder.Environment.ContentRootPath, Assembly.GetExecutingAssembly().GetName().Name + ".xml");
+    if (File.Exists(xmlPath))
     {
-        Version = "v1",
-        Title = "ToDo API",
-        Description = "An ASP.NET Core Web API for managing ToDo items",
-        //TermsOfService = new Uri("https://example.com/terms"),
-        //Contact = new OpenApiContact
-        //{
-        //    Name = "Example Contact",
-        //    Url = new Uri("https://example.com/contact")
-        //},
-        //License = new OpenApiLicense
-        //{
-        //    Name = "Example License",
-        //    Url = new Uri("https://example.com/license")
-        //}
+        options.IncludeXmlComments(xmlPath, true);
+    }
+    options.AddSecurityDefinition(CookieAuthenticationDefaults.AuthenticationScheme, new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+    {
+        Name = CookieAuthenticationDefaults.AuthenticationScheme,
+        Scheme = CookieAuthenticationDefaults.AuthenticationScheme
     });
-
-    // using System.Reflection;
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-
-    //options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    //{
-    //    In = ParameterLocation.Header,
-    //    Description = "Please enter a valid token",
-    //    Name = "Authorization",
-    //    Type = SecuritySchemeType.Http,
-    //    BearerFormat = "JWT",
-    //    Scheme = "Bearer"
-    //});
-    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    //{
-    //    {
-    //        new OpenApiSecurityScheme
-    //        {
-    //            Reference = new OpenApiReference
-    //            {
-    //                Type=ReferenceType.SecurityScheme,
-    //                Id="Bearer"
-    //            }
-    //        },
-    //        new string[]{}
-    //    }
-    //});
 });
+
+services.AddControllers();
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+services.AddAuthorization();
+services.AddEndpointsApiExplorer();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
 //    app.UseSwagger();
-//    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json","SecureSwagger v1"));
+//    app.UseSwaggerUI();
 //}
 
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-//改用登入授權
-app.UseSwaggerAuthorized();
+//app.UseSwaggerAuthorized();
 app.UseSwagger();
-app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SecureSwagger v1"));
+app.UseSwaggerUI(options => {
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger v1");
+    string path = Path.Combine(builder.Environment.WebRootPath, "swagger/ui/index.html");
+    if (File.Exists(path)) options.IndexStream = () => new MemoryStream(File.ReadAllBytes(path));
+});
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseRouting();
+app.UseAuthorization();
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+
+var summaries = new[]
+{
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
+
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+       new WeatherForecast
+       (
+           DateTime.Now.AddDays(index),
+           Random.Shared.Next(-20, 55),
+           summaries[Random.Shared.Next(summaries.Length)]
+       ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast").RequireAuthorization();
+
 app.Run();
+
+internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
