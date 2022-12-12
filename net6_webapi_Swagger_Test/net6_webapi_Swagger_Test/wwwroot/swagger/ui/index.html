@@ -77,6 +77,14 @@
                                                     authorizeButton.innerText = getAuthorizeButtonText();
                                                     authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
                                                     auth.closeAuthDialog();
+                                                    
+                                                     setTimeout(function () {
+                                                        alert("Time expired logout!");
+                                                        auth.logout(function () {
+                                                            authorizeButton.innerText = getAuthorizeButtonText();
+                                                            authorizeButton.className = 'btn ' + getAuthorizeButtonCssClass();
+                                                        });
+                                                    }, 5000);
                                                 });
                                             }
                                         }
